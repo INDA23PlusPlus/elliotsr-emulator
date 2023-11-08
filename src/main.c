@@ -29,7 +29,6 @@ typedef struct {
     addr_t NNN;
 } instr_t;
 
-// reversed?
 opcode_t fetch(void) {
     opcode_t opcode = 0x0000;
     opcode |= ((opcode_t)Memory[PC++]) << 8;
