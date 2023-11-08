@@ -20,6 +20,8 @@ static byte_t SoundTimer = 0; // Sound Timer Register
 
 static byte_t V[16] = {0}; // General Registers (V0, V1, V2, V3, V4, V5, V6, V7, V8, V9, VA, VB, VC, VD, VE, VF)
 
+static byte_t Draw = 0; // Draw Flag
+
 typedef struct {
     byte_t op;
     byte_t X;
@@ -98,32 +100,6 @@ void execute(instr_t instr) {
 
         // Draw To Display
         case 0x0D: {
-
-            // byte_t x = Register[X] & 63;
-            // byte_t y = Register[Y] & 31;
-            // Register[REG_VF] = 0;
-            // for (byte_t iy = 0; iy < N; iy++) {
-            //     byte_t sprite = Memory[IDX + iy];
-            //     for (byte_t ix = 0; ix < 8; ix++) {
-            //         width_t dmask = (((width_t)1) << x);
-            //         byte_t bmask = ((((byte_t)1) << 7) >> ix);
-            //         byte_t sbit = sprite & bmask;
-            //         width_t dbit = Display[y] & dmask;
-            //         if (sbit != 0 && dbit != 0) {
-            //             Display[y] &= ~dmask;
-            //             Register[REG_VF] = 1;
-            //         } else if (sbit != 0 && dbit == 0) {
-            //             Display[y] |= dmask;
-            //         }
-            //         if (x > 63) break;
-            //         x++;
-            //     }
-            //     if (y > 31) break;
-            //     y++;
-            // }
-
-            // DXYN(V[X], V[Y], N);
-
             byte_t x = V[X] & 63;
             byte_t y = V[Y] & 31;
 
@@ -140,9 +116,15 @@ void execute(instr_t instr) {
                     }
                 }
             }
+
+            Draw = 1;
             break;
         }
 
+        default: {
+            THROW(1, "Unrecognized operation");
+            break;
+        }
 
     }
 }
@@ -206,13 +188,18 @@ int main(void) {
             instr_t instr = decode(opcode);
             execute(instr);
 
-            ch8display();
+            if (Draw) {
+                Draw = 0;
+                ch8display();
+            } 
 
-            if (DelayTimer > 0)
+            if (DelayTimer > 0) {
                 DelayTimer--;
+            }
 
-            if (SoundTimer > 0)
+            if (SoundTimer > 0) {
                 SoundTimer--;
+            }
 
             t -= delay;
         }
