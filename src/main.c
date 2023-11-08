@@ -140,12 +140,10 @@ void ch8display(void) {
         for (byte_t x = 0; x < 64; x++) {
             width_t mask = ((width_t)1) << x;
             if ((Display[y] & mask) != 0) {
-                printf("\x1b[47m"); // ANSI WHITE BG
+                printf("\x1b[47m  "); // ANSI WHITE BG
             } else {
-                printf("\x1b[40m"); // ANSI BLACK BG
+                printf("\x1b[40m  "); // ANSI BLACK BG
             }
-            putchar(' ');
-            putchar(' ');
             printf("\x1b[0m"); // ANSI RESET
         }
         putchar('\n');
